@@ -1,9 +1,12 @@
-import React, {useEffect } from 'react';
+import React, {useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllBlogs, deleteBlog } from '../Store/blogThunk';
 import { Link } from 'react-router-dom';
 
 const BlogList = () => {
+
+  const [showDeleteConform, setShowDeleteConform] = useState(false);
+  const [selectDeleteId, setSelectDeleteId] = useState(null);
   const dispatch = useDispatch();
   const { blogList, loading, error } = useSelector((state) => state.auth);
 
@@ -11,18 +14,23 @@ const BlogList = () => {
     dispatch(getAllBlogs());
   }, [dispatch]);
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this blog?')) {
+  const handleDelete = (id) => {
+    setSelectDeleteId(id)
+    setShowDeleteConform(true);
+  };
+
+  const confirmDelete = async () => {
       try {
-        await dispatch(deleteBlog(id)).unwrap();
-        alert('Blog deleted successfully!');
+        await dispatch(deleteBlog(selectDeleteId)).unwrap();
         dispatch(getAllBlogs());
       } catch (err) {
-        alert('Error deleting blog. Please try again.');
-        console.error('Delete error:', err);
+        console.error('Error during deletion:', err);
+      }finally{
+        setShowDeleteConform(false);
+        setSelectDeleteId(null);
       }
-    }
-  };
+    };
+  
 
   if (loading) {
     return (
@@ -52,6 +60,24 @@ const BlogList = () => {
             Add New Blog
           </Link>
         </div>
+
+        {/* delete Blog function */}
+
+        {showDeleteConform && (
+          <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50'>
+            <div className='p-6 bg-white rounded shadow-lg w-80'>
+              <h2 className='mb-4 text-lg font-semibold text-center'>Are you sure to delete this task?</h2>
+              <div className='flex justify-center gap-4'>
+                <button onClick={() => setShowDeleteConform(false)} 
+                  className='px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-700'
+                  >Cancel</button>
+                  <button onClick={confirmDelete} 
+                  className='px-4 py-2 text-white bg-red-600 rounded hover:bg-red-700'
+                  >Delete</button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {blogList && blogList.length > 0 ? (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
