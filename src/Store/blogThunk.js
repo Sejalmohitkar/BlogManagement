@@ -1,6 +1,8 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+const BASE_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+
 // Login Thunk
 export const getAllBlogs = createAsyncThunk(
   "auth/getAllBlogs",
@@ -10,7 +12,7 @@ export const getAllBlogs = createAsyncThunk(
       const token = user?.token;
 
       const response = await axios.get(
-        "http://localhost:5000/api/blogs/",
+        `${BASE_URL}/api/blogs/`,
         {
           headers: {
             Authorization: token,
@@ -35,7 +37,7 @@ export const createBlog = createAsyncThunk(
     const adminToken = JSON.parse(localStorage.getItem("currentUser"))?.token;
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/blogs/",
+        `${BASE_URL}/api/blogs/`,
         credentials,
         {
           headers: {
@@ -59,7 +61,7 @@ export const updateBlog = createAsyncThunk(
 
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/blogs/${id}`, 
+        `${BASE_URL}/api/blogs/${id}`, 
         updatedData,                                
         {
           headers: {
@@ -84,7 +86,7 @@ export const getBlogById = createAsyncThunk(
     const token = user?.token;
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/blogs/${id}`,
+        `${BASE_URL}/api/blogs/${id}`,
         {
           headers: {
             Authorization: token,
@@ -108,7 +110,7 @@ export const deleteBlog = createAsyncThunk(
     const token = JSON.parse(localStorage.getItem("currentUser"))?.token;
     try {
       const response = await axios.delete(
-        `http://localhost:5000/api/blogs/${id}`,
+        `${BASE_URL}/api/blogs/${id}`,
         {
           headers: {
             Authorization: token,
